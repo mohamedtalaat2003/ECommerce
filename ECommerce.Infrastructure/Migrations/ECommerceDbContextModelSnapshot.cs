@@ -34,14 +34,12 @@ namespace ECommerce.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ShortName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -58,7 +56,6 @@ namespace ECommerce.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BuyerEmail")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("DeliveryMethodId")
@@ -108,7 +105,7 @@ namespace ECommerce.Infrastructure.Migrations
                     b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("ECommerce.Domain.Entities.ProductBrand", b =>
+            modelBuilder.Entity("ECommerce.Domain.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -146,6 +143,22 @@ namespace ECommerce.Infrastructure.Migrations
                     b.ToTable("products");
                 });
 
+            modelBuilder.Entity("ECommerce.Domain.Entities.ProductBrand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductBrands");
+                });
+
             modelBuilder.Entity("ECommerce.Domain.Entities.ProductCategory", b =>
                 {
                     b.Property<int>("Id")
@@ -162,25 +175,6 @@ namespace ECommerce.Infrastructure.Migrations
                     b.ToTable("ProductCategories");
                 });
 
-            modelBuilder.Entity("CleanArchDemo.Domain.Entities.Product", b =>
-                {
-                    b.HasOne("ECommerce.Domain.Entities.ProductBrand", "ProductBrand")
-                        .WithMany()
-                        .HasForeignKey("ProductBrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ECommerce.Domain.Entities.ProductCategory", "ProductCategory")
-                        .WithMany()
-                        .HasForeignKey("ProductCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProductBrand");
-
-                    b.Navigation("ProductCategory");
-                });
-
             modelBuilder.Entity("ECommerce.Domain.Entities.Order", b =>
                 {
                     b.HasOne("ECommerce.Domain.Entities.DeliveryMethod", "DeliveryMethod")
@@ -195,23 +189,18 @@ namespace ECommerce.Infrastructure.Migrations
                                 .HasColumnType("integer");
 
                             b1.Property<string>("City")
-                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.Property<string>("FirstName")
-                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.Property<string>("LastName")
-                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.Property<string>("Street")
-                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.Property<string>("ZipCode")
-                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.HasKey("OrderId");
@@ -285,8 +274,7 @@ namespace ECommerce.Infrastructure.Migrations
                 {
                     b.Navigation("OrderItems");
                 });
-//>>>>>>>>> Temporary merge branch 2
-//#pragma warning restore 612, 618
+#pragma warning restore 612, 618
         }
     }
 }
