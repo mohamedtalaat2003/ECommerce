@@ -1,5 +1,4 @@
-﻿using CleanArchDemo.Domain.Entities;
-using ECommerce.Domain.Enum;
+﻿using ECommerce.Domain.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +23,7 @@ namespace ECommerce.Domain.Entities
             DeliveryMethod = deliveryMethod;
             OrderItems = orderItems;
         }
-        public string BuyerEmail { get; set; } //دا هنجيبه من لتوكن بتاعه
+        public string? BuyerEmail { get; set; } //دا هنجيبه من لتوكن بتاعه
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         public OrderAddress ShipToAddress { get; set; }
         public DeliveryMethod DeliveryMethod { get; set; }

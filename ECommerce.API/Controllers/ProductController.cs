@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
-using CleanArchDemo.Domain.Entities;
-using CloudinaryDotNet.Actions;
 using ECommerce.Application.DTOs;
 using ECommerce.Application.Repositories.Contract.Common;
 using ECommerce.Application.Services;
+using ECommerce.Domain.Entities;
 using ECommerce.Domain.Specifications;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.API.Controllers

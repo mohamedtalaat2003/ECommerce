@@ -15,7 +15,7 @@ namespace ECommerce.Application.DTOs
         public string? PictureUrl { get; set; }
         // دول بنستخدمهم في الـ GET (العرض)
         public string? BrandName { get; set; }
-        public string CategoryName { get; set; }
+        public string? CategoryName { get; set; }
 
         // دول بنستخدمهم في الـ POST (الإضافة)
         public int ProductBrandId { get; set; }

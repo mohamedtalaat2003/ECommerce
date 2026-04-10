@@ -1,5 +1,4 @@
-﻿using CleanArchDemo.Domain.Entities;
-using ECommerce.Domain.Entities;
+﻿using ECommerce.Domain.Entities;
 using ECommerce.Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 

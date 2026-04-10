@@ -1,5 +1,4 @@
-﻿using CleanArchDemo.Domain.Entities;
-
+﻿
 namespace ECommerce.Domain.Entities
 {
     public class ProductItemOrdered 

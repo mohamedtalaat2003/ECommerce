@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace CleanArchDemo.Domain.Entities
+namespace ECommerce.Domain.Entities
 {
     public class Product :BaseClass
     {
@@ -12,7 +12,7 @@ namespace CleanArchDemo.Domain.Entities
         public string? Description { get; set; }
         public decimal Price { get; set; }
         public string? PictureUrl { get; set; }
-        public string PublicId { get; set; }
+        public string? PublicId { get; set; }
 
         [ForeignKey("ProductBrand")]
         public int ProductBrandId { get; set; }

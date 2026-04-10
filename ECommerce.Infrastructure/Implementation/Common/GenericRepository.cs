@@ -1,5 +1,5 @@
-﻿using CleanArchDemo.Domain.Entities;
-using ECommerce.Application.Repositories.Contract.Common;
+﻿using ECommerce.Application.Repositories.Contract.Common;
+using ECommerce.Domain.Entities;
 using ECommerce.Domain.Specifications;
 using ECommerce.Infrastructure;
 using ECommerce.Infrastructure.Implementation.Common;

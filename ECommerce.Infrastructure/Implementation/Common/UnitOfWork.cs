@@ -1,11 +1,5 @@
-﻿using CleanArchDemo.Domain.Entities;
-using ECommerce.Application.Repositories.Contract.Common;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ECommerce.Application.Repositories.Contract.Common;
+using ECommerce.Domain.Entities;
 
 namespace ECommerce.Infrastructure.Implementation.Common
 {

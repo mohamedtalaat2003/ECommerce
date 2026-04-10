@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using CleanArchDemo.Domain.Entities;
 using ECommerce.Application.DTOs;
 using ECommerce.Domain.Entities;
 namespace ECommerce.Application.Heplers

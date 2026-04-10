@@ -5,7 +5,6 @@ using ECommerce.Infrastructure.Implementation.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ECommerce.Application.Heplers;
 using ECommerce.Application.Repositories;
 using ECommerce.Infrastructure.Implementation;
 using StackExchange.Redis;
@@ -25,7 +24,7 @@ namespace ECommerce.Infrastructure
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IOrderService, OrderService>();
 
-            
+
             services.AddAutoMapper(typeof(MappingProfiles));
             services.AddDbContext<ECommerceDbContext>(
                 options =>
@@ -47,7 +46,7 @@ namespace ECommerce.Infrastructure
             }).AddEntityFrameworkStores<AppIdentityDbContext>()
             .AddSignInManager<SignInManager<AppUser>>();
 
-            services.AddSingleton<IConnectionMultiplexer>(c=>
+            services.AddSingleton<IConnectionMultiplexer>(c =>
             {
                 var Configuration = ConfigurationOptions.Parse(configuration.GetConnectionString("Redis"), true);
                 return ConnectionMultiplexer.Connect(Configuration);

@@ -1,4 +1,4 @@
-﻿using CleanArchDemo.Domain.Entities;
+﻿using ECommerce.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
