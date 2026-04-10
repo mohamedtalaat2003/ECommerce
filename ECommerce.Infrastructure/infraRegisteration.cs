@@ -25,7 +25,7 @@ namespace ECommerce.Infrastructure
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IOrderService, OrderService>();
 
-            
+
             services.AddAutoMapper(typeof(MappingProfiles));
             services.AddDbContext<ECommerceDbContext>(
                 options =>
@@ -47,7 +47,7 @@ namespace ECommerce.Infrastructure
             }).AddEntityFrameworkStores<AppIdentityDbContext>()
             .AddSignInManager<SignInManager<AppUser>>();
 
-            services.AddSingleton<IConnectionMultiplexer>(c=>
+            services.AddSingleton<IConnectionMultiplexer>(c =>
             {
                 var Configuration = ConfigurationOptions.Parse(configuration.GetConnectionString("Redis"), true);
                 return ConnectionMultiplexer.Connect(Configuration);
