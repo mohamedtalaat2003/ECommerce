@@ -28,7 +28,7 @@ namespace ECommerce.Infrastructure.Implementation
                 var productItem = await _unitOfWork.Repository<Product>().GetByIdAsync(item.Id);
 
                 // تشيك بسيط يمنع الـ Exception
-                if (productItem == null) continue;
+                if (productItem == null) return null;
 
                 var itemOrder = new ProductItemOrdered(productItem.Id, productItem.Name, productItem.PictureUrl);
                 var OrderItem = new OrderItem(itemOrder, productItem.Price, item.Quantity);

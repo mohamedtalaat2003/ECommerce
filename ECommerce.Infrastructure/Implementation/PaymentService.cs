@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Product = ECommerce.Domain.Entities.Product;
 
 namespace ECommerce.Infrastructure.Implementation
 {
@@ -37,6 +38,22 @@ namespace ECommerce.Infrastructure.Implementation
             {
                 var deliveryMethod = await _unitOfWork.Repository<DeliveryMethod>().GetByIdAsync(basket.DeliveryMethodId.Value);
                 shippingPrice = deliveryMethod.Price;
+            }
+
+            foreach(var item in basket.Items)
+            {
+                var productItem = await _unitOfWork.Repository<Product>().GetByIdAsync(item.Id);
+                if(item.Price != productItem.Price)
+                {
+                    item.Price = productItem.Price; // لو حصل تغير في السعرفي الفرونت بالغلط مثلا لا حدث دائما باللي موجود في الداتا بيز
+                }
+
+                var service = new PaymentIntentCreateOptions
+                {
+                    Amount = (long)basket.Items.Sum(i=>i.Quantity *(i.Price*100))+(long)shippingPrice*100,
+                    Currency = "usd",
+                    Payment
+                }
             }
         }
     }
