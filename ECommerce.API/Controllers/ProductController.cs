@@ -43,25 +43,29 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Creat([FromForm]ProductCreateDto productDto)
+        public async Task<ActionResult> Creat([FromForm] ProductCreateDto productDto)
         {
-
-            var photoResult = await _photoService.AddPhotoAsync(productDto.Photo);
-            if (photoResult.Error != null) return BadRequest(photoResult.Error.Message);
-
             var product = _mapper.Map<ProductCreateDto, Product>(productDto);
             if (product == null) return BadRequest();
+
+            // 2. ارفع الصورة الأول
+            var photoResult = await _photoService.AddPhotoAsync(productDto.Photo);
+            if (photoResult.Error != null) return BadRequest(photoResult.Error.Message);
 
             product.PublicId = photoResult.PublicId;
             product.PictureUrl = photoResult.SecureUrl.AbsoluteUri;
 
-
-
             await _unitOfWork.Repository<Product>().AddAsync(product);
 
-            await _unitOfWork.CompleteAsync();
+            var result = await _unitOfWork.CompleteAsync();
 
-            return CreatedAtAction(nameof(Get),new {id = product.Id} , productDto);
+            if (result <= 0)
+            {
+                await _photoService.DeletePhotoAsync(product.PublicId);
+                return BadRequest("Problem saving product to database");
+            }
+
+            return CreatedAtAction(nameof(Get), new { id = product.Id }, productDto);
         }
 
         [HttpPut("{id}/photo")]
