@@ -74,13 +74,13 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        await context.Database.MigrateAsync();
-        await ECommerceContextSeed.SeedAsync(context);
-
         var userManager = services.GetRequiredService<UserManager<AppUser>>();
         var identityContext = services.GetRequiredService<AppIdentityDbContext>();
         await identityContext.Database.MigrateAsync();
         await AppIdentityDbContext.SeeduserAsyn(userManager);
+        await context.Database.MigrateAsync();
+        await ECommerceContextSeed.SeedAsync(context);
+
     }
     catch (Exception ex)
     {

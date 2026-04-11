@@ -36,8 +36,8 @@ namespace ECommerce.Infrastructure.Implementation
             }
 
             var deliveryMethod = await _unitOfWork.Repository<DeliveryMethod>().GetByIdAsync(deliverymethodId);
-            var subtotal = items.Sum(item => item.Price * item.Quantity);
-            var order = new Order( items, buyerEmail, shippingAddress, deliveryMethod, subtotal);
+            //var subtotal = items.Sum(item => item.Price * item.Quantity);
+            var order = new Order( items, buyerEmail, shippingAddress, deliveryMethod);
             await _unitOfWork.Repository<Order>().AddAsync(order);
             var result = await _unitOfWork.CompleteAsync();
 
