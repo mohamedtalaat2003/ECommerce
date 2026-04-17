@@ -6,7 +6,7 @@
 ![Clean Architecture](https://img.shields.io/badge/Architecture-Clean_Architecture-brightgreen?style=for-the-badge)
 
 ## 📖 Overview
-A robust and scalable E-Commerce Software as a Service (SaaS) platform. This project is built to handle multi-tenant e-commerce operations, allowing businesses to create, manage, and scale their online stores efficiently.
+E-Commerce Software as a Service (SaaS) platform. This project is built to handle multi-tenant e-commerce operations, allowing businesses to create, manage, and scale their online stores efficiently.
 
 **Note:** *This project is currently under active development and is not yet completed.*
 
