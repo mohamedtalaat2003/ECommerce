@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ECommerce.Application.DTOs;
+using ECommerce.Application.Global_Error_Handling;
 using ECommerce.Application.Repositories.Contract.Common;
 using ECommerce.Application.Services;
 using ECommerce.Domain.Entities;
@@ -27,17 +28,32 @@ namespace ECommerce.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetAll([FromQuery]ProductSpecParams sepcParams)
         {
+            if(sepcParams == null) 
+                return BadRequest(new ApiResponse(400, "Invalid parameters"));
+
             var spec = new productWithBrandAndCategoriesSpecification(sepcParams);
+
+            if(spec == null)
+                return NotFound(new ApiResponse(404));
+
             var products = await _unitOfWork.Repository<Product>().ListSpecificationAsync(spec);
+
+            if(products == null)
+                return NotFound(new ApiResponse(404));
+
             return Ok(_mapper.Map<IReadOnlyList<Product>,IReadOnlyList<ProductToReturnDto>>(products));
         }
         [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductToReturnDto>> Get(int id)
         {
-            if (id <= 0) return BadRequest();
+            if (id <= 0)
+                return BadRequest(new ApiResponse(400, "Invalid ID"));
+
             var product = await _unitOfWork.Repository<Product>().GetByIdAsync(id);
-            if (product == null) return NotFound();
+
+            if (product == null) 
+                return NotFound(new ApiResponse(404)); 
 
             return Ok(_mapper.Map<Product, ProductToReturnDto>(product));
         }
@@ -45,21 +61,30 @@ namespace ECommerce.API.Controllers
         [HttpPost]
         public async Task<ActionResult> Creat([FromForm]ProductCreateDto productDto)
         {
+            if(productDto == null) 
+                return BadRequest(new ApiResponse(400,"Invalid product data"));
 
             var photoResult = await _photoService.AddPhotoAsync(productDto.Photo);
-            if (photoResult.Error != null) return BadRequest(photoResult.Error.Message);
+
+            if (photoResult.Error != null) 
+                return BadRequest(photoResult.Error.Message);
 
             var product = _mapper.Map<ProductCreateDto, Product>(productDto);
-            if (product == null) return BadRequest();
+
+            if (product == null) 
+                return NotFound(new ApiResponse(404));
 
             product.PublicId = photoResult.PublicId;
             product.PictureUrl = photoResult.SecureUrl.AbsoluteUri;
 
-
-
             await _unitOfWork.Repository<Product>().AddAsync(product);
 
-            await _unitOfWork.CompleteAsync();
+           var result = await _unitOfWork.CompleteAsync();
+            if(result <=0)
+            {
+                await _photoService.DeletePhotoAsync(photoResult.PublicId);
+                return BadRequest(new ApiResponse(400,"Failed to create product"));
+            }
 
             return CreatedAtAction(nameof(Get),new {id = product.Id} , productDto);
         }
@@ -67,10 +92,13 @@ namespace ECommerce.API.Controllers
         [HttpPut("{id}/photo")]
         public async Task<ActionResult> Update(int id , [FromForm] ProductToReturnDto productDto , IFormFile file)
         {
-            if (id != productDto.Id) return BadRequest("ID mismatch");
+            if (id != productDto.Id || id <= 0) 
+                return BadRequest(new ApiResponse(400,"ID mismatch"));
 
             var productInDb = await _unitOfWork.Repository<Product>().GetByIdAsync(id);
-            if (productInDb == null) return NotFound();
+
+            if (productInDb == null)
+                return NotFound(new ApiResponse(404));
 
             _mapper.Map(productDto, productInDb);
 
@@ -88,7 +116,12 @@ namespace ECommerce.API.Controllers
 
 
             _unitOfWork.Repository<Product>().Update(productInDb);
-            await _unitOfWork.CompleteAsync();
+            var result = await _unitOfWork.CompleteAsync();
+            if (result <= 0)
+            {
+                await _photoService.DeletePhotoAsync(uploadResult.PublicId);
+                return BadRequest(new ApiResponse(400, "Failed to create product"));
+            }
 
             return Ok();
         }
@@ -96,14 +129,26 @@ namespace ECommerce.API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
+            if (id <= 0)
+                return BadRequest(new ApiResponse(400, "Invalid ID"));
+
             var productDeleted = await _unitOfWork.Repository<Product>().GetByIdAsync(id);
-            if (productDeleted == null) return NotFound();
+
+            if (productDeleted == null) 
+                return NotFound(new ApiResponse(404));
+
             if (!string.IsNullOrEmpty(productDeleted.PublicId))
             {
                 await _photoService.DeletePhotoAsync(productDeleted.PublicId);
             }
+
             _unitOfWork.Repository<Product>().Delete(id);
-            await _unitOfWork.CompleteAsync();
+
+           var result =  await _unitOfWork.CompleteAsync();
+            if (result <= 0)
+            {
+                return BadRequest(new ApiResponse(400, "Failed to delete product"));
+            }
 
             return NoContent();
         }

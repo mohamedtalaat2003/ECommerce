@@ -1,4 +1,5 @@
-﻿using ECommerce.Application.Repositories;
+﻿using ECommerce.Application.Global_Error_Handling;
+using ECommerce.Application.Repositories;
 using ECommerce.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,11 @@ namespace ECommerce.API.Controllers
         [HttpGet]
         public async Task<ActionResult<CustomerBasket>> GetBasketById(string Id)
         {
+            if(string.IsNullOrWhiteSpace(Id))
+                return NotFound(new ApiResponse(404));
+
             var basket = await _basketRepository.GetBasketAsync(Id);
+
             return Ok(basket ?? new CustomerBasket(Id));// لو مش موجود رجع سلة فاضية بال Id والفرونت هو يشتغل بقا
         }
 
@@ -30,14 +35,27 @@ namespace ECommerce.API.Controllers
         [HttpPost]
         public async Task<ActionResult<CustomerBasket>> UpdateBasket(CustomerBasket basket)
         {
+            if(basket == null) 
+                return NotFound(new ApiResponse(404));
+
             var updatedBasket = await _basketRepository.UpdateBasketAsync(basket);
-            if (updatedBasket == null) return BadRequest("Problem updating the basket");
+
+            if (updatedBasket == null) 
+                return BadRequest(new ApiResponse(400, "probelm updated basket"));
+
             return Ok(updatedBasket);
         }
         [HttpDelete]
         public async Task<ActionResult> DeleteBasket(string Id)
         {
+            if(string.IsNullOrWhiteSpace(Id))
+                return NotFound(new ApiResponse(404));
+
             var result = await _basketRepository.DeleteBasketAsync(Id);
+
+            if (!result) 
+                return BadRequest(new ApiResponse(400, "problem deleting basket"));   
+            
             return NoContent();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ECommerce.Application.DTOs;
+using ECommerce.Application.Global_Error_Handling;
 using ECommerce.Application.Services;
 using ECommerce.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -36,11 +37,18 @@ namespace ECommerce.API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
+            if(loginDto == null) 
+                return NotFound(new ApiResponse(404));
+
             var user =await _userManager.FindByEmailAsync(loginDto.Email);
-            if (user == null) return Unauthorized("Invalid Email");
+
+            if (user == null)
+                return Unauthorized("Invalid Email");
 
             var result =await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password,false);
-            if (!result.Succeeded) return Unauthorized("Invalid password");
+
+            if (!result.Succeeded)
+                return Unauthorized(new ApiResponse(401,"Invalid password"));
 
             return new UserDto
             {
@@ -55,7 +63,15 @@ namespace ECommerce.API.Controllers
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
+
+            if(email == null) 
+                return NotFound(new ApiResponse(404));
+
             var user = await _userManager.FindByEmailAsync(email);
+
+            if(user == null)
+                return 
+                    Unauthorized(new ApiResponse(401, "User no longer exists"));
 
             return new UserDto
             {
@@ -68,6 +84,9 @@ namespace ECommerce.API.Controllers
         [HttpPost("Register")]
         public async Task<ActionResult <UserDto>> Register(RegisterDto registerDto)
         {
+            if (registerDto == null)
+                return NotFound(new ApiResponse(404));
+
             var user = new AppUser
             {
                 DisplayName = registerDto.DisplayName,
@@ -76,7 +95,9 @@ namespace ECommerce.API.Controllers
             };
 
             var result =await _userManager.CreateAsync(user, registerDto.Password);
-            if (!result.Succeeded) return BadRequest("Registeration failed");
+
+            if (!result.Succeeded)
+                return BadRequest(new ApiResponse(400, "problem in registertion"));
 
             return new UserDto
             {
@@ -89,7 +110,15 @@ namespace ECommerce.API.Controllers
         [HttpGet("emailExists")]
         public async Task<ActionResult<bool>> CheckEmailExistsAsync([FromQuery] string email)
         {
-            return await _userManager.FindByEmailAsync(email) != null;
+            if (email == null)
+                return NotFound(new ApiResponse(404));
+
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if(user == null)
+                NotFound(new ApiResponse(404));
+
+            return Ok(user);
         }
 
         [Authorize]
@@ -100,7 +129,10 @@ namespace ECommerce.API.Controllers
                 .Include(x => x.Address)
                 .SingleOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
 
-            if (user.Address == null) return Ok(new AddressDto());
+            if (user == null) 
+                return Unauthorized(new ApiResponse(401, "User no longer exists"));
+
+            if (user.Address == null || user==null) return NotFound(new ApiResponse(404));
 
             return Ok(_mapper.Map<Address, AddressDto>(user.Address));
         }
@@ -108,14 +140,26 @@ namespace ECommerce.API.Controllers
         [HttpPut]
         public async Task<ActionResult<AddressDto>> UpdateUserAddress(AddressDto addressDto)
         {
+            if (addressDto == null) 
+                return NotFound(new ApiResponse(404));
+
             var user = await _userManager.Users
                 .Include(x => x.Address)
                 .SingleOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
 
+            if (user == null) 
+                return Unauthorized(new ApiResponse(401, "User no longer exists"));
+
+            if (user.Address == null) 
+                return NotFound(new ApiResponse(404));
+
             user.Address = _mapper.Map<AddressDto, Address>(addressDto);
 
             var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded) return BadRequest("Problem updating the user");
+
+            if (!result.Succeeded) 
+                return BadRequest(new ApiResponse(400, "probelm Updateي Address"));
+
             return Ok(_mapper.Map<Address, AddressDto>(user.Address));
             
 

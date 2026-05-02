@@ -3,12 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using
+
+using System.ComponentModel.DataAnnotations;
 
 namespace ECommerce.Application.DTOs
 {
     public class LoginDto
     {
-        public string? Email { get; set; }
-        public string? Password { get; set; }
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must be at least 8 characters long")]
+        public string Password { get; set; }
     }
 }

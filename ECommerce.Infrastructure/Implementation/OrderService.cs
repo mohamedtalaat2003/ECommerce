@@ -23,12 +23,12 @@ namespace ECommerce.Infrastructure.Implementation
             var basket = await _basketRepository.GetBasketAsync(basketId);//هاتب الباسكت من الريدس
             if (basket == null) return null;
             var items = new List<OrderItem>();
+
+            var products = await _unitOfWork.Repository<Product>()?.GetAllAsync() ?? null;
             foreach (var item in basket.Items)
             {
-                var productItem = await _unitOfWork.Repository<Product>().GetByIdAsync(item.Id);
-
-                // تشيك بسيط يمنع الـ Exception
-                if (productItem == null) continue;
+                var productItem = products.FirstOrDefault(p => p.Id == item.Id);
+                if (productItem == null) return null;
 
                 var itemOrder = new ProductItemOrdered(productItem.Id, productItem.Name, productItem.PictureUrl);
                 var OrderItem = new OrderItem(itemOrder, productItem.Price, item.Quantity);
@@ -38,7 +38,9 @@ namespace ECommerce.Infrastructure.Implementation
             var deliveryMethod = await _unitOfWork.Repository<DeliveryMethod>().GetByIdAsync(deliverymethodId);
             var subtotal = items.Sum(item => item.Price * item.Quantity);
             var order = new Order( items, buyerEmail, shippingAddress, deliveryMethod, subtotal);
+
             await _unitOfWork.Repository<Order>().AddAsync(order);
+
             var result = await _unitOfWork.CompleteAsync();
 
             if (result <= 0) return null;
@@ -49,7 +51,7 @@ namespace ECommerce.Infrastructure.Implementation
 
         public async Task<IReadOnlyList<DeliveryMethod>> GetDeliveryMethodsAsync()
         {
-            return await _unitOfWork.Repository<DeliveryMethod>().GetAllAsync() ;
+            return await _unitOfWork.Repository<DeliveryMethod>().GetAllAsync();
         }
 
         public async Task<Order> GetOrderByIdAsync(int id, string buyerEmail)

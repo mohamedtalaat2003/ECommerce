@@ -8,11 +8,12 @@ namespace ECommerce.Domain.Entities
 {
     public class Product :BaseClass
     {
-        public string? Name { get; set; }
-        public string? Description { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
         public decimal Price { get; set; }
-        public string? PictureUrl { get; set; }
-        public string? PublicId { get; set; }
+        public string PictureUrl { get; set; }
+        public string PublicId { get; set; }
+        public int StockQuantity { get; set; }
 
         [ForeignKey("ProductBrand")]
         public int ProductBrandId { get; set; }

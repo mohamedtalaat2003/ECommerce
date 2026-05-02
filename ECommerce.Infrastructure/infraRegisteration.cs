@@ -41,8 +41,10 @@ namespace ECommerce.Infrastructure
 
             services.AddIdentityCore<AppUser>(options =>
             {
-                options.Password.RequireNonAlphanumeric = false;
-                //options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
             }).AddEntityFrameworkStores<AppIdentityDbContext>()
             .AddSignInManager<SignInManager<AppUser>>();
 

@@ -12,19 +12,20 @@ namespace ECommerce.Application.DTOs
     {
 
         [Required(ErrorMessage = "First Name is Required")]
-        public string? FirstName { get; set; }
+        public string FirstName { get; set; } // شيلنا الـ ? عشان الضمان
 
         [Required(ErrorMessage = "Last Name is Required")]
-        public string? LastName { get; set; }
+        public string LastName { get; set; }
 
-        [Required]
-        public string? Street { get; set; }
+        [Required(ErrorMessage = "Street address is required")]
+        public string Street { get; set; }
 
-        [Required]
-        public string? City { get; set; }
+        [Required(ErrorMessage = "City is required")]
+        public string City { get; set; }
 
-        [Required]
-        public string? ZipCode { get; set; }
+        [Required(ErrorMessage = "Zip Code is required")]
+        [RegularExpression(@"^\d{5}$", ErrorMessage = "Zip Code must be 5 digits")] 
+        public string ZipCode { get; set; }
     }
 
 
