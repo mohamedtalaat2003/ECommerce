@@ -24,10 +24,12 @@ namespace ECommerce.Infrastructure.Implementation
             if (basket == null) return null;
             var items = new List<OrderItem>();
 
-            var products = await _unitOfWork.Repository<Product>()?.GetAllAsync() ?? null;
+            var products = await _unitOfWork.Repository<Product>().GetAllAsync();
+    
             foreach (var item in basket.Items)
             {
                 var productItem = products.FirstOrDefault(p => p.Id == item.Id);
+
                 if (productItem == null) return null;
 
                 var itemOrder = new ProductItemOrdered(productItem.Id, productItem.Name, productItem.PictureUrl);

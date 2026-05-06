@@ -43,7 +43,7 @@ namespace ECommerce.Infrastructure.Implementation
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims), //put claims in the token
-                Expires = DateTime.Now.AddDays(7),//expiration time for the token
+                Expires = DateTime.UtcNow.AddDays(7),//expiration time for the token
                 SigningCredentials = creds, // key secret + hash
                 Issuer = _config["Token:Issuer"], // من اصدر ال توكن
             };

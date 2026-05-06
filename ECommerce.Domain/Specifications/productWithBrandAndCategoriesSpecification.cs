@@ -36,6 +36,7 @@ namespace ECommerce.Domain.Specifications
                         break;
                 }
             }
+            ApplyPaging(specParams.PageSize * (specParams.PageIndex - 1), specParams.PageSize);
         }
 
         //when call one product

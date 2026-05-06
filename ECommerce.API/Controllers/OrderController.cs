@@ -29,15 +29,15 @@ namespace ECommerce.API.Controllers
         public async Task<ActionResult<OrderToReturnDto>> CreateOrder(orderDto orderDto)
         {
             if(orderDto == null) 
-                NotFound(new ApiResponse(404));
+               return NotFound(new ApiResponse(404));
 
                 var email = User.FindFirstValue(ClaimTypes.Email);
             if(email == null) 
-                NotFound(new ApiResponse(404));
+              return NotFound(new ApiResponse(404));
 
             var address = _mapper.Map<AddressDto, OrderAddress>(orderDto.ShipToAddress);
             if (address == null)
-                NotFound(new ApiResponse(404));
+              return NotFound(new ApiResponse(404));
 
                     var order = await _orderService.CreateOrderAsync(email, orderDto.DeliveryMethodId, orderDto.BasketId, address);
             if (order == null) return BadRequest(new ApiResponse(400, "probelm creating order"));
@@ -49,11 +49,11 @@ namespace ECommerce.API.Controllers
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
             if (email == null)
-                NotFound(new ApiResponse(404));
+               return NotFound(new ApiResponse(404));
 
             var orders = await _orderService.GetOrdersForUserAsync(email);
             if (orders == null)
-                NotFound(new ApiResponse(404));
+              return NotFound(new ApiResponse(404));
 
                 return Ok(_mapper.Map<IReadOnlyList<Order>, IReadOnlyList<OrderToReturnDto>>(orders));
         }
@@ -65,7 +65,7 @@ namespace ECommerce.API.Controllers
 
             var email = User.FindFirstValue(ClaimTypes.Email);
             if (email == null)
-                NotFound(new ApiResponse(404));
+               return NotFound(new ApiResponse(404));
 
                 var order = await _orderService.GetOrderByIdAsync(id, email);
 

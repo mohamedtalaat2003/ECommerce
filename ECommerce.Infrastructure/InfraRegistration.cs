@@ -1,4 +1,4 @@
-﻿using ECommerce.Application.Heplers;
+﻿using ECommerce.Application.Helpers;
 using ECommerce.Application.Services;
 using ECommerce.Application.Repositories.Contract.Common;
 using ECommerce.Infrastructure.Implementation.Common;
@@ -13,11 +13,11 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ECommerce.Infrastructure
 {
-    public static class infraRegisteration
+    public static class InfraRegistration
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            //services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IBasketRepository, BasketRepository>();

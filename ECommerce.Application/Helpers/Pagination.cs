@@ -1,4 +1,4 @@
-﻿namespace ECommerce.Application.Heplers
+﻿namespace ECommerce.Application.Helpers
 {
     public class Pagination<T> where T :class
     {
@@ -7,6 +7,7 @@
             PageIndex = pageIndex;
             PageSize = pageSize;
             Data = data;
+            Count = count;
         }
 
         public int PageIndex { get; set; }

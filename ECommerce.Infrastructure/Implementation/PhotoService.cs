@@ -1,6 +1,6 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
-using ECommerce.Application.Heplers;
+using ECommerce.Application.Helpers;
 using ECommerce.Application.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;

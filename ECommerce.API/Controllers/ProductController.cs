@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.API.Controllers
 {
+        [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
@@ -25,6 +26,7 @@ namespace ECommerce.API.Controllers
         }
 
         //FromQuery بتخلي swigger يفك الاوبجكت أكن حاطط parameters بال props اللي في ال params
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetAll([FromQuery]ProductSpecParams sepcParams)
         {
@@ -33,17 +35,14 @@ namespace ECommerce.API.Controllers
 
             var spec = new productWithBrandAndCategoriesSpecification(sepcParams);
 
-            if(spec == null)
-                return NotFound(new ApiResponse(404));
-
             var products = await _unitOfWork.Repository<Product>().ListSpecificationAsync(spec);
-
+    
             if(products == null)
                 return NotFound(new ApiResponse(404));
 
             return Ok(_mapper.Map<IReadOnlyList<Product>,IReadOnlyList<ProductToReturnDto>>(products));
         }
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductToReturnDto>> Get(int id)
         {
@@ -59,7 +58,7 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Creat([FromForm]ProductCreateDto productDto)
+        public async Task<ActionResult> Create([FromForm]ProductCreateDto productDto)
         {
             if(productDto == null) 
                 return BadRequest(new ApiResponse(400,"Invalid product data"));
@@ -120,7 +119,7 @@ namespace ECommerce.API.Controllers
             if (result <= 0)
             {
                 await _photoService.DeletePhotoAsync(uploadResult.PublicId);
-                return BadRequest(new ApiResponse(400, "Failed to create product"));
+                return BadRequest(new ApiResponse(400, "Failed to update product"));
             }
 
             return Ok();

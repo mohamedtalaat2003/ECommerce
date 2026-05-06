@@ -21,8 +21,8 @@ namespace ECommerce.Infrastructure
             base.OnModelCreating(builder);
             //علشان لو تحب تغير الاسامي باستخدام fluentapi
         }
-        DbSet<AppUser> AppUsers { get; set; }
-        DbSet<Address> Addresses { get; set; }
+       public DbSet<AppUser> AppUsers { get; set; }
+        public DbSet<Address> Addresses { get; set; }
 
         public static async Task SeeduserAsyn(UserManager<AppUser> userManager)
         {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommerce.Application.Heplers
+namespace ECommerce.Application.Helpers
 {
     //علشان اجيب ال credetials in appsetting to convert to objects 
     //this process called configuration bindng

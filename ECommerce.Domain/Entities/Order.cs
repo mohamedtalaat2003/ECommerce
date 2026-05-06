@@ -16,12 +16,13 @@ namespace ECommerce.Domain.Entities
 
         // 2. الكونستركتور ده اللي بنستخدمه في الـ OrderService
         public Order(IReadOnlyList<OrderItem> orderItems, string buyerEmail,
-            OrderAddress shipToAddress, DeliveryMethod deliveryMethod, decimal subtotal)
+            OrderAddress shipToAddress, DeliveryMethod deliveryMethod , decimal subtotal)
         {
             BuyerEmail = buyerEmail;
             ShipToAddress = shipToAddress;
             DeliveryMethod = deliveryMethod;
             OrderItems = orderItems;
+            Subtotal = subtotal;
         }
         public string? BuyerEmail { get; set; } //دا هنجيبه من لتوكن بتاعه
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;

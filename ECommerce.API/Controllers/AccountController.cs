@@ -38,7 +38,7 @@ namespace ECommerce.API.Controllers
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
             if(loginDto == null) 
-                return NotFound(new ApiResponse(404));
+                return BadRequest(new ApiResponse(400));
 
             var user =await _userManager.FindByEmailAsync(loginDto.Email);
 
@@ -85,7 +85,7 @@ namespace ECommerce.API.Controllers
         public async Task<ActionResult <UserDto>> Register(RegisterDto registerDto)
         {
             if (registerDto == null)
-                return NotFound(new ApiResponse(404));
+                return BadRequest(new ApiResponse(400));
 
             var user = new AppUser
             {
@@ -116,9 +116,9 @@ namespace ECommerce.API.Controllers
             var user = await _userManager.FindByEmailAsync(email);
 
             if(user == null)
-                NotFound(new ApiResponse(404));
+               return NotFound(new ApiResponse(404));
 
-            return Ok(user);
+            return Ok(true);
         }
 
         [Authorize]
@@ -132,7 +132,7 @@ namespace ECommerce.API.Controllers
             if (user == null) 
                 return Unauthorized(new ApiResponse(401, "User no longer exists"));
 
-            if (user.Address == null || user==null) return NotFound(new ApiResponse(404));
+            if (user.Address == null) return NotFound(new ApiResponse(404));
 
             return Ok(_mapper.Map<Address, AddressDto>(user.Address));
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using ECommerce.Application.DTOs;
 using ECommerce.Domain.Entities;
-namespace ECommerce.Application.Heplers
+namespace ECommerce.Application.Helpers
 {
     public class MappingProfiles : Profile
     {

@@ -11,8 +11,6 @@ namespace ECommerce.Application.DTOs
     //دا المعلومات اللي اليوزر هيبعتها
     public class orderDto
     {
-        public class OrderDto
-        {
             [Required(ErrorMessage = "Basket ID is required")]
             public string BasketId { get; set; }
 
@@ -22,5 +20,5 @@ namespace ECommerce.Application.DTOs
 
             [Required(ErrorMessage = "Shipping address is required")]
             public AddressDto ShipToAddress { get; set; }
-        }
+      }
 }

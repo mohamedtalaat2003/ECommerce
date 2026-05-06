@@ -24,7 +24,6 @@ namespace ECommerce.Application.DTOs
         public string City { get; set; }
 
         [Required(ErrorMessage = "Zip Code is required")]
-        [RegularExpression(@"^\d{5}$", ErrorMessage = "Zip Code must be 5 digits")] 
         public string ZipCode { get; set; }
     }
 

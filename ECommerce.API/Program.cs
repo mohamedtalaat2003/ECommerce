@@ -1,5 +1,5 @@
 using ECommerce.Application.Global_Error_Handling;
-using ECommerce.Application.Heplers;
+using ECommerce.Application.Helpers;
 using ECommerce.Domain.Entities;
 using ECommerce.Infrastructure;
 using ECommerce.Infrastructure.Data;
