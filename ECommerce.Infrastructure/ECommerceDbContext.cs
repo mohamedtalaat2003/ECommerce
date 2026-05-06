@@ -32,7 +32,6 @@ public class ECommerceDbContext :DbContext
 
         // 3. الـ Snapshot بتاع المنتج تابع للـ OrderItem
         modelBuilder.Entity<OrderItem>().OwnsOne(i => i.ItemOrdered, io => { io.WithOwner(); });
-        modelBuilder.Entity<Order>().Property(o => o.Subtotal).HasColumnType("decimal(18,2)");
         modelBuilder.Entity<OrderItem>().Property(i => i.Price).HasColumnType("decimal(18,2)");
         modelBuilder.Entity<DeliveryMethod>().Property(d => d.Price).HasColumnType("decimal(18,2)");
     }

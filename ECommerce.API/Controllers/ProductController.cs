@@ -58,11 +58,12 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create([FromForm]ProductCreateDto productDto)
+        public async Task<ActionResult> Creat([FromForm]ProductCreateDto productDto)
         {
             if(productDto == null) 
                 return BadRequest(new ApiResponse(400,"Invalid product data"));
 
+            // 2. ارفع الصورة الأول
             var photoResult = await _photoService.AddPhotoAsync(productDto.Photo);
 
             if (photoResult.Error != null) 
@@ -85,7 +86,7 @@ namespace ECommerce.API.Controllers
                 return BadRequest(new ApiResponse(400,"Failed to create product"));
             }
 
-            return CreatedAtAction(nameof(Get),new {id = product.Id} , productDto);
+            return CreatedAtAction(nameof(Get), new { id = product.Id }, productDto);
         }
 
         [HttpPut("{id}/photo")]

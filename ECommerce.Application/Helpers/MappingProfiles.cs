@@ -35,13 +35,14 @@ namespace ECommerce.Application.Helpers
             CreateMap<Order, OrderToReturnDto>()
                 .ForMember(d => d.DeliveryMethod, o => o.MapFrom(s => s.DeliveryMethod.ShortName))
                 .ForMember(d => d.ShippingPrice, o => o.MapFrom(s => s.DeliveryMethod.Price))
-                .ForMember(d => d.Subtotal, o => o.MapFrom(s => s.GetTotal()));
+                .ForMember(d => d.Total, o => o.MapFrom(s => s.GetTotal()));
 
             //تجاهلنا حاجات علشان مش مهم اليوزر يشوفها
             CreateMap<OrderItem, OrderItemDto>()
                 .ForMember(d => d.ProductId, o => o.MapFrom(s => s.ItemOrdered.ProductItemId))
                 .ForMember(d => d.ProductName, o => o.MapFrom(s => s.ItemOrdered.Name))
                 .ForMember(d => d.PictureUrl, o => o.MapFrom(s => s.ItemOrdered.PictureUrl));
+
         }
     }
 }

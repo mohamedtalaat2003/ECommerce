@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ECommerce.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitECommerceDbContext : Migration
+    public partial class InitializationECommerce : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -68,7 +68,6 @@ namespace ECommerce.Infrastructure.Migrations
                     ShipToAddress_City = table.Column<string>(type: "text", nullable: true),
                     ShipToAddress_ZipCode = table.Column<string>(type: "text", nullable: true),
                     DeliveryMethodId = table.Column<int>(type: "integer", nullable: false),
-                    Subtotal = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false),
                     PaymentIntentId = table.Column<string>(type: "text", nullable: true)
                 },

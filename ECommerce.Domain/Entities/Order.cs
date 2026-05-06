@@ -1,6 +1,7 @@
 ﻿using ECommerce.Domain.Enum;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,13 +30,11 @@ namespace ECommerce.Domain.Entities
         public OrderAddress ShipToAddress { get; set; }
         public DeliveryMethod DeliveryMethod { get; set; }
         public IReadOnlyList<OrderItem> OrderItems { get; set; }
-        public decimal Subtotal { get; set; }
+        [NotMapped]
+        public decimal Subtotal => OrderItems?.Sum(item => item.Price * item.Quantity) ?? 0; 
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
         public string? PaymentIntentId { get; set; }
 
-        public decimal GetTotal()
-        {
-            return OrderItems.Sum(item => item.Price * item.Quantity);
-        }
+        public decimal GetTotal() => Subtotal + (DeliveryMethod?.Price ?? 0);
     }
 }
