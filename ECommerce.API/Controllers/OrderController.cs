@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ECommerce.Application.DTOs;
 using ECommerce.Application.Global_Error_Handling;
+using ECommerce.Application.Helpers;
 using ECommerce.Application.Services;
 using ECommerce.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -28,7 +29,12 @@ namespace ECommerce.API.Controllers
         [HttpPost]
         public async Task<ActionResult<OrderToReturnDto>> CreateOrder(OrderDto orderDto )
         {
-            if(orderDto == null) 
+            var userEmail = User.RetrieveEmailFromPrincipal();
+            var auth0Id = User.RetrieveNameFromPrincipal();
+
+            var order = await _orderService.CreateOrderAsync(userEmail, auth0Id, orderDto.DeliveryMethodId,orderDto.BasketId,orderDto.ShipToAddress);
+
+            if (orderDto == null) 
                return NotFound(new ApiResponse(404));
 
                 var email = User.FindFirstValue(ClaimTypes.Email);
@@ -39,7 +45,6 @@ namespace ECommerce.API.Controllers
             if (address == null)
               return NotFound(new ApiResponse(404));
 
-                    var order = await _orderService.CreateOrderAsync(email, orderDto.DeliveryMethodId, orderDto.BasketId, address);
             if (order == null) return BadRequest(new ApiResponse(400, "probelm creating order"));
             
             return Ok(_mapper.Map<Order, OrderToReturnDto>(order));

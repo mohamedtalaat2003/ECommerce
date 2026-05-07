@@ -9,6 +9,7 @@ namespace ECommerce.Application.Services
 {
     public interface IPaymentService
     {
-        Task<string> CreateOrUpdatePaymentIntent(string basketId);
+        Task<string> CreateOrUpdatePaymentIntent(Order order);
+        Task<string> CheckPaymentStatusAsync(string invoiceId);
     }
 }

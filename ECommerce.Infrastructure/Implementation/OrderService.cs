@@ -1,4 +1,6 @@
-﻿using ECommerce.Application.Repositories;
+﻿using AutoMapper;
+using ECommerce.Application.DTOs;
+using ECommerce.Application.Repositories;
 using ECommerce.Application.Repositories.Contract.Common;
 using ECommerce.Application.Services;
 using ECommerce.Domain.Entities;
@@ -10,15 +12,18 @@ namespace ECommerce.Infrastructure.Implementation
     {
         private readonly IBasketRepository _basketRepository;
         private readonly IUnitOfWork _unitOfWork;
-        public OrderService(IBasketRepository basketRepository, IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+
+        public OrderService(IBasketRepository basketRepository, IUnitOfWork unitOfWork,IMapper mapper)
         {
             _basketRepository = basketRepository;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
 
 
-        public async Task<Order> CreateOrderAsync(string buyerEmail, int deliverymethodId, int basketId, OrderAddress shippingAddress)
+        public async Task<Order> CreateOrderAsync(string buyerEmail, string auth0Id ,int deliverymethodId, int basketId, AddressDto shippingAddress)
         {
             var basket = await _basketRepository.GetBasketAsync(basketId);//هاتب الباسكت من الريدس
             if (basket == null) return null;
@@ -39,7 +44,7 @@ namespace ECommerce.Infrastructure.Implementation
 
             var deliveryMethod = await _unitOfWork.Repository<DeliveryMethod>().GetByIdAsync(deliverymethodId);
             var subtotal = items.Sum(item => item.Price * item.Quantity);
-            var order = new Order( items, buyerEmail, shippingAddress, deliveryMethod,subtotal);
+            var order = new Order( items, buyerEmail, _mapper.Map<AddressDto, OrderAddress>(shippingAddress), deliveryMethod,subtotal, auth0Id);
 
             await _unitOfWork.Repository<Order>().AddAsync(order);
 

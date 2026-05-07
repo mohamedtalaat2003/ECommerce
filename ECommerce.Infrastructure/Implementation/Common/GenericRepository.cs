@@ -5,6 +5,7 @@ using ECommerce.Infrastructure;
 using ECommerce.Infrastructure.Implementation.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using System.Linq.Expressions;
 
 
 namespace ECommerce.Infrastructure.Implementation.Common
@@ -45,5 +46,10 @@ namespace ECommerce.Infrastructure.Implementation.Common
             return SpecificationEvaluator<T>.GetQuery(_context.Set<T>().AsQueryable(), spec);
         }
         public void Update(T product) => _context.Set<T>().Update(product);
+
+        public async Task<IReadOnlyList<T>> GetByExpressionAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _context.Set<T>().Where(predicate).ToListAsync();
+        }
     }
 }

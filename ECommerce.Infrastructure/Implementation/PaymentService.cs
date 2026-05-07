@@ -1,60 +1,81 @@
-﻿//using ECommerce.Application.Repositories;
-//using ECommerce.Application.Repositories.Contract.Common;
-//using ECommerce.Application.Services;
-//using ECommerce.Domain.Entities;
-//using Microsoft.Extensions.Configuration;
-//using Stripe;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
-//using Product = ECommerce.Domain.Entities.Product;
+﻿using ECommerce.Application.Helpers;
+using ECommerce.Application.Repositories.Contract.Common;
+using ECommerce.Application.Services;
+using ECommerce.Domain.Entities;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text;
+using System.Threading.Tasks;
 
-//namespace ECommerce.Infrastructure.Implementation
-//{
-//    public class PaymentService : IPaymentService
-//    {
-//        private readonly IBasketRepository _basketRepository;
-//        private readonly IUnitOfWork _unitOfWork;
-//        private readonly IConfiguration _config;
+namespace ECommerce.Infrastructure.Implementation
+{
+    public class PaymentService : IPaymentService
+    {
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
+        private IUnitOfWork _unitOfWork;
+        public PaymentService(HttpClient httpClient, IConfiguration config, IUnitOfWork unitOfWork)
+        {
+            _httpClient = httpClient;
+            _config = config;
+            _unitOfWork = unitOfWork;
+        }
 
-//        public PaymentService(IConfiguration config,IUnitOfWork unitOfWork , IBasketRepository basketRepository)
-//        {
-//            _basketRepository = basketRepository;
-//            _unitOfWork = unitOfWork;
-//            _config = config;
-//        }
+        public async Task<string> CreateOrUpdatePaymentIntent(Order order)
+        {
+            var invioceData = new
+            {
+                cartTotal = order.GetTotal(),
+                currency = "EGP",
+                customer = new
+                {
+                    firstName = order.BuyerName,
+                    email = order.BuyerEmail,
+                },
+                redirectionUrls = new
+                {
+                    successUrl = _config["Fawaterk:SuccessUrl"],
+                    failUrl = _config["Fawaterk:FailUrl"],
+                },
+                cartItems = order.OrderItems.Select(i => new
+                {
+                    id = i.ItemOrdered.ProductItemId,
+                    quantity = i.Quantity,
+                    price = i.Price
+                })
+            };
 
-//        public async Task<CustomerBasket> CreateOrUpdatePaymentIntent(string basketId)
-//        {
-//            StripeConfiguration.ApiKey = _config["SripeSettings:SecretKey"];
-//            var basket = await _basketRepository.GetBasketAsync(basketId);
-//            if (basket == null) return null;
+            _httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", _config["Fawaterk:ApiKey"]);
 
-//            decimal shippingPrice = 0m;
+            var response =await _httpClient.PostAsJsonAsync("createInvioce", invioceData);
 
-//            if(basket.DeliveryMethodId.HasValue)
-//            {
-//                var deliveryMethod = await _unitOfWork.Repository<DeliveryMethod>().GetByIdAsync(basket.DeliveryMethodId.Value);
-//                shippingPrice = deliveryMethod.Price;
-//            }
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<FawaterkResponse>();
+                order.Fawaterk_InvoiceId = result.Data.InvoiceId.ToString();
+                await _unitOfWork.CompleteAsync();
+                return result.Data.Url;
+            }
 
-//            foreach(var item in basket.Items)
-//            {
-//                var productItem = await _unitOfWork.Repository<Product>().GetByIdAsync(item.Id);
-//                if(item.Price != productItem.Price)
-//                {
-//                    item.Price = productItem.Price; // لو حصل تغير في السعرفي الفرونت بالغلط مثلا لا حدث دائما باللي موجود في الداتا بيز
-//                }
+            return null;
+        }
 
-//                var service = new PaymentIntentCreateOptions
-//                {
-//                    Amount = (long)basket.Items.Sum(i=>i.Quantity *(i.Price*100))+(long)shippingPrice*100,
-//                    Currency = "usd",
-//                    Payment
-//                }
-//            }
-//        }
-//    }
-//}
+        public async Task<string> CheckPaymentStatusAsync(string invoiceId)
+        {
+            var response = await _httpClient.GetAsync($"getInvoice/{invoiceId}");
+            if(response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<FawaterkResponse>();
+                return result.Data.Status;
+            }
+            return "Failed";
+        }
+
+
+    }
+}

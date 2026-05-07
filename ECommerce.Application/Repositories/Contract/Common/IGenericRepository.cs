@@ -1,5 +1,6 @@
 ﻿using ECommerce.Domain.Entities;
 using ECommerce.Domain.Specifications;
+using System.Linq.Expressions;
 
 namespace ECommerce.Application.Repositories.Contract.Common
 {
@@ -15,5 +16,6 @@ namespace ECommerce.Application.Repositories.Contract.Common
 
         Task<T>GetEntitiesWithSpecAsync(ISpecification<T> spec);
         Task<IReadOnlyList<T>>ListSpecificationAsync(ISpecification<T> spec);
+        Task<IReadOnlyList<T>> GetByExpressionAsync(Expression<Func<T, bool>> predicate);
     }
 }
