@@ -25,8 +25,8 @@ namespace ECommerce.Infrastructure.Implementation.Common
                 _context.Set<T>().Remove(entity);
             }
         }
-        public async Task<IReadOnlyList<T>> GetAllAsync() => await _context.Set<T>().ToListAsync();
-        public async Task<T?> GetByIdAsync(int id) => await _context.Set<T>().FindAsync(id);
+        public async Task<IReadOnlyList<T>> GetAllAsync() => await _context.Set<T>().AsNoTracking().ToListAsync();
+        public async Task<T?> GetByIdAsync(int id) => await _context.Set<T>().AsNoTracking().FirstOrDefaultAsync(e => e.Id == id);
 
         public async Task<T> GetEntitiesWithSpecAsync(ISpecification<T> spec)
         {

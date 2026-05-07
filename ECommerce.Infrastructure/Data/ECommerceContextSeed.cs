@@ -30,7 +30,7 @@ namespace ECommerce.Infrastructure.Data
         new DeliveryMethod { ShortName = "Free", DeliveryTime = "1-2 Weeks", Description = "Free shipping for orders over $100", Price = 0 }
     };
 
-                context.DeliveryMethods.AddRange(methods);
+                await context.DeliveryMethods.AddRangeAsync(methods);
                 await context.SaveChangesAsync();
             }
         }

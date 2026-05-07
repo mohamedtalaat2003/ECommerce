@@ -21,7 +21,7 @@ namespace ECommerce.Infrastructure
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IBasketRepository, BasketRepository>();
-            services.AddScoped<ITokenService, TokenService>();
+            services.AddSingleton<ITokenService, TokenService>();
             services.AddScoped<IOrderService, OrderService>();
 
 

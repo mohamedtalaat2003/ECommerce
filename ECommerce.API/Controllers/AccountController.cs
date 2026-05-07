@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using ECommerce.Application.DTOs;
 using ECommerce.Application.Global_Error_Handling;
+using ECommerce.Application.Repositories.Contract.Common;
 using ECommerce.Application.Services;
 using ECommerce.Domain.Entities;
+using ECommerce.Domain.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -22,15 +24,17 @@ namespace ECommerce.API.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
     
 
-        public AccountController(ITokenService tokenService , UserManager<AppUser> userManager,SignInManager<AppUser> signInManager, IMapper mapper)
+        public AccountController(ITokenService tokenService , UserManager<AppUser> userManager,SignInManager<AppUser> signInManager, IMapper mapper,IUnitOfWork unitOfWork)
         {
             _tokenService = tokenService;
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         [AllowAnonymous]
@@ -125,9 +129,9 @@ namespace ECommerce.API.Controllers
         [HttpGet("address")]
         public async Task<ActionResult<AddressDto>> GetuserAddress()
         {
-            var user = await _userManager.Users
-                .Include(x => x.Address)
-                .SingleOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
+            var userWithAddress = _userManager.Users.Include(u => u.Address);
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await userWithAddress.SingleOrDefaultAsync(x => x.Email == email);
 
             if (user == null) 
                 return Unauthorized(new ApiResponse(401, "User no longer exists"));

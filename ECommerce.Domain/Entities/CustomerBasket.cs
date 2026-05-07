@@ -12,11 +12,11 @@ namespace ECommerce.Domain.Entities
         public CustomerBasket() // to deserialize json to object
         {
         }
-        public  CustomerBasket(string id)
+        public  CustomerBasket(int id)
         {
             Id = id;
         }
-        public string Id { get; set; }
+        public int Id { get; set; }
         public List<BasketItem>Items { get; set; } 
 
         public int? DeliveryMethodId { get; set; }

@@ -17,7 +17,7 @@ namespace ECommerce.Domain.Entities
 
         // 2. الكونستركتور ده اللي بنستخدمه في الـ OrderService
         public Order(IReadOnlyList<OrderItem> orderItems, string buyerEmail,
-            OrderAddress shipToAddress, DeliveryMethod deliveryMethod , decimal subtotal)
+            OrderAddress shipToAddress, DeliveryMethod deliveryMethod,decimal subtotal)
         {
             BuyerEmail = buyerEmail;
             ShipToAddress = shipToAddress;
@@ -31,7 +31,8 @@ namespace ECommerce.Domain.Entities
         public DeliveryMethod DeliveryMethod { get; set; }
         public IReadOnlyList<OrderItem> OrderItems { get; set; }
         [NotMapped]
-        public decimal Subtotal => OrderItems?.Sum(item => item.Price * item.Quantity) ?? 0; 
+        //public decimal Subtotal => OrderItems?.Sum(item => item.Price * item.Quantity) ?? 0; 
+        public decimal Subtotal { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
         public string? PaymentIntentId { get; set; }
 

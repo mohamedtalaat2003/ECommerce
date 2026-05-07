@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 namespace ECommerce.Application.DTOs
 {
     //دا المعلومات اللي اليوزر هيبعتها
-    public class orderDto
+    public class OrderDto
     {
             [Required(ErrorMessage = "Basket ID is required")]
-            public string BasketId { get; set; }
+            public int BasketId { get; set; }
 
             [Required(ErrorMessage = "Delivery Method is required")]
             [Range(1, int.MaxValue, ErrorMessage = "Please select a valid delivery method")]

@@ -17,9 +17,9 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<CustomerBasket>> GetBasketById(string Id)
+        public async Task<ActionResult<CustomerBasket>> GetBasketById(int Id)
         {
-            if(string.IsNullOrWhiteSpace(Id))
+            if(Id <= 0)
                 return NotFound(new ApiResponse(404));
 
             var basket = await _basketRepository.GetBasketAsync(Id);
@@ -46,9 +46,9 @@ namespace ECommerce.API.Controllers
             return Ok(updatedBasket);
         }
         [HttpDelete]
-        public async Task<ActionResult> DeleteBasket(string Id)
+        public async Task<ActionResult> DeleteBasket(int Id)
         {
-            if(string.IsNullOrWhiteSpace(Id))
+            if(Id <= 0)
                 return NotFound(new ApiResponse(404));
 
             var result = await _basketRepository.DeleteBasketAsync(Id);

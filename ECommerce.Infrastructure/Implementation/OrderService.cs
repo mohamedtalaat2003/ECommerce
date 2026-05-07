@@ -18,20 +18,20 @@ namespace ECommerce.Infrastructure.Implementation
 
 
 
-        public async Task<Order> CreateOrderAsync(string buyerEmail, int deliverymethodId, string basketId, OrderAddress shippingAddress)
+        public async Task<Order> CreateOrderAsync(string buyerEmail, int deliverymethodId, int basketId, OrderAddress shippingAddress)
         {
             var basket = await _basketRepository.GetBasketAsync(basketId);//هاتب الباسكت من الريدس
             if (basket == null) return null;
             var items = new List<OrderItem>();
 
-            var products = await _unitOfWork.Repository<Product>().GetAllAsync();
-    
+               
+            var ProductIds = basket.Items.Select(i => i.Id).ToList();
+            var spec = new ProductsByIdsSpecification(ProductIds);
+
+            var products = await _unitOfWork.Repository<Product>().ListSpecificationAsync(spec);
             foreach (var item in basket.Items)
-            {
+            { 
                 var productItem = products.FirstOrDefault(p => p.Id == item.Id);
-
-                if (productItem == null) return null;
-
                 var itemOrder = new ProductItemOrdered(productItem.Id, productItem.Name, productItem.PictureUrl);
                 var OrderItem = new OrderItem(itemOrder, productItem.Price, item.Quantity);
                 items.Add(OrderItem);
@@ -39,7 +39,7 @@ namespace ECommerce.Infrastructure.Implementation
 
             var deliveryMethod = await _unitOfWork.Repository<DeliveryMethod>().GetByIdAsync(deliverymethodId);
             var subtotal = items.Sum(item => item.Price * item.Quantity);
-            var order = new Order( items, buyerEmail, shippingAddress, deliveryMethod, subtotal);
+            var order = new Order( items, buyerEmail, shippingAddress, deliveryMethod,subtotal);
 
             await _unitOfWork.Repository<Order>().AddAsync(order);
 

@@ -9,7 +9,7 @@ namespace ECommerce.Domain.Specifications
 {
     public class ProductsByIdsSpecification : BaseSpecification<Product>
     {
-        public ProductsByIdsSpecification(int Id) :base(p=>p.Id == Id) 
+        public ProductsByIdsSpecification(List<int> ids) :base(p=>ids.Contains(p.Id)) 
         {
                 AddInclude(p => p.ProductBrand);
                 AddInclude(p => p.ProductCategory);

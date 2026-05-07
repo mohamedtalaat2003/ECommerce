@@ -45,6 +45,7 @@ namespace ECommerce.Infrastructure.Implementation
 
                 using var stream = file.OpenReadStream(); // read photo as bytes to send it to Api
                 //لأن كل صورة ببتتبعت بتتفكك ل packets صغيرة وكل packet بيمثل bytes فيه ففببعت البايتس دي تتجمع في ال Cloudinary
+                stream.WriteTimeout = 5000; // set a timeout for the stream to prevent hanging
                 var uploadParams = new ImageUploadParams
                 {
                     File = new FileDescription(file.FileName, stream), //this photo that upload it to cloudinary
