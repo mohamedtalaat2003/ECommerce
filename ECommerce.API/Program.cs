@@ -76,7 +76,7 @@ builder.Services.AddAuthentication(options =>
     {
         NameClaimType = ClaimTypes.NameIdentifier
     };
-    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
 
     });
 

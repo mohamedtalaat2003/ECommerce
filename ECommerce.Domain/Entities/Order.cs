@@ -16,7 +16,7 @@ namespace ECommerce.Domain.Entities
         }
 
         // 2. الكونستركتور ده اللي بنستخدمه في الـ OrderService
-        public Order(IReadOnlyList<OrderItem> orderItems, string buyerEmail,
+        public Order(List<OrderItem> orderItems, string buyerEmail,
             OrderAddress shipToAddress, DeliveryMethod deliveryMethod,decimal subtotal ,string BuyerAuth0Id)
         {
             BuyerEmail = buyerEmail;
