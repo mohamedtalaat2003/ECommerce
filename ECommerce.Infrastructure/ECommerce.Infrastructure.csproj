@@ -28,6 +28,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Data\Identity\" />
+	  <Folder Include="Migrations\AppIdentityDb\" />
 	</ItemGroup>
 
 </Project>

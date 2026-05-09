@@ -26,18 +26,7 @@ namespace ECommerce.Infrastructure
 
 
             services.AddAutoMapper(typeof(MappingProfiles));
-            services.AddDbContext<ECommerceDbContext>(
-                options =>
-                {
-                    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
-                }
-            );
-            services.AddDbContext<AppIdentityDbContext>(
-                options =>
-                {
-                    options.UseNpgsql(configuration.GetConnectionString("IdentityConnection"));
-                }
-            );
+
 
             services.AddIdentityCore<AppUser>(options =>
             {

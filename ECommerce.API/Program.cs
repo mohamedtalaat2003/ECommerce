@@ -19,6 +19,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
+
+builder.Services.AddDbContext<ECommerceDbContext>(
+    options =>
+    {
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    }
+);
+builder.Services.AddDbContext<AppIdentityDbContext>(
+    options =>
+    {
+        options.UseNpgsql(builder.Configuration.GetConnectionString("IdentityConnection"));
+    }
+);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 //ربط swagger with Jwt علشان ابعت التوكن واجرب عليها ال Apis Authorize
@@ -45,6 +58,7 @@ builder.Services.AddSwaggerGen( c=>
     c.AddSecurityRequirement(securityRequirment);
 }
     );
+
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 
 //validation token when came with reqeust

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ECommerce.Infrastructure.Migrations
 {
     [DbContext(typeof(ECommerceDbContext))]
-    [Migration("20260410220514_Initialization2ECommerce")]
-    partial class Initialization2ECommerce
+    [Migration("20260509052716_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,17 +58,24 @@ namespace ECommerce.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BuyerAuth0Id")
+                        .HasColumnType("integer");
+
                     b.Property<string>("BuyerEmail")
+                        .HasColumnType("text");
+
+                    b.Property<string>("BuyerName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("DeliveryMethodId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Fawaterk_InvoiceId")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PaymentIntentId")
-                        .HasColumnType("text");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -114,12 +121,15 @@ namespace ECommerce.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PictureUrl")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<decimal>("Price")
@@ -132,7 +142,11 @@ namespace ECommerce.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("PublicId")
+                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("StockQuantity")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
