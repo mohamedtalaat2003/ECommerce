@@ -38,10 +38,9 @@ namespace ECommerce.Infrastructure.Implementation
             foreach (var item in basket.Items)
             { 
                 var productItem = products.FirstOrDefault(p => p.Id == item.Id);
-                if (productItem == null) return null;
+                if (productItem == null) throw new Exception($"Product with id {item.Id} not found");
                 var itemOrder = new ProductItemOrdered(productItem.Id, productItem.Name, productItem.PictureUrl);
                 var OrderItem = new OrderItem(itemOrder, productItem.Price, item.Quantity);
-                if(OrderItem == null) return null;
                 items.Add(OrderItem);
             }
 

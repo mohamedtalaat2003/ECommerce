@@ -3,73 +3,62 @@ using ECommerce.Application.Helpers;
 using ECommerce.Domain.Entities;
 using ECommerce.Infrastructure;
 using ECommerce.Infrastructure.Data;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+
 using System.Security.Claims;
 using System.Text;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+#region Services
 
 builder.Services.AddControllers();
 
+builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
-builder.Services.AddDbContext<ECommerceDbContext>(
-    options =>
-    {
-        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-    }
-);
-builder.Services.AddDbContext<AppIdentityDbContext>(
-    options =>
-    {
-        options.UseNpgsql(builder.Configuration.GetConnectionString("IdentityConnection"));
-    }
-);
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-//ربط swagger with Jwt علشان ابعت التوكن واجرب عليها ال Apis Authorize
-builder.Services.AddSwaggerGen( c=>
+#region DbContexts
+
+builder.Services.AddDbContext<ECommerceDbContext>(options =>
 {
-    var securitySchema = new OpenApiSecurityScheme //“التطبيق بتاعي بيستخدم Authentication (JWT)، وعايزك تضيف زرار أدخل فيه التوكن”
-    {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-        Name = "Authorization",
-        In = ParameterLocation.Header, // التوكن هيتبعت في الهيدر
-        Type = SecuritySchemeType.Http,//نوع ال الAuthen
-        Scheme = "bearer",
-        Reference = new OpenApiReference
-        {
-            Type = ReferenceType.SecurityScheme, 
-            Id = "Bearer" //اسم الاسكيما اللي فوق
-        }
-    };
-    c.AddSecurityDefinition("Bearer", securitySchema);//اربط الاسكيما بالاسم دا
-    var securityRequirment = new OpenApiSecurityRequirement
-    {
-        {securitySchema,new []{"Bearer"} }
-    };
-    c.AddSecurityRequirement(securityRequirment);
-}
-    );
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
-builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+{
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("IdentityConnection"));
+});
 
-//validation token when came with reqeust
-//AddAuth=> بفعل الAuth بستخدام ال Jwt
-//JwtBearerDefaults => Bearer Toekn
-builder.Services.AddAuthentication()
+#endregion
+
+#region Cloudinary
+
+builder.Services.Configure<CloudinarySettings>(
+    builder.Configuration.GetSection("CloudinarySettings"));
+
+#endregion
+
+#region Authentication
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = "localJwt";
+    options.DefaultChallengeScheme = "localJwt";
+})
 .AddJwtBearer("localJwt", options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
+
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(builder.Configuration["Token:Key"])
         ),
@@ -84,60 +73,82 @@ builder.Services.AddAuthentication()
 })
 .AddJwtBearer("Auth0", options =>
 {
-    options.Authority = $"https://{builder.Configuration["Auth0:Domain"]}/";
-    options.Audience = builder.Configuration["Auth0:Audience"];
+    options.Authority =
+        $"https://{builder.Configuration["Auth0:Domain"]}/";
 
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        NameClaimType = ClaimTypes.NameIdentifier
-    };
+    options.Audience =
+        builder.Configuration["Auth0:Audience"];
+
+    options.TokenValidationParameters =
+        new TokenValidationParameters
+        {
+            NameClaimType = ClaimTypes.NameIdentifier
+        };
 });
-
-builder.Services.AddCors(opt =>
-{
-    opt.AddPolicy("CorsPolicy", policy =>
-    {
-        policy.AllowAnyHeader()
-              .AllowAnyMethod()
-              .WithOrigins("http://localhost:4200"); // دومين الفرونت إند بتاعك
-    });
-});
-
-// تحت في الـ Middleware
-
-var app = builder.Build();
-app.UseMiddleware<ExceptionMiddleware>();
-app.UseCors("CorsPolicy");
-
-#region Migrate and Seed Database to test connection with neon
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<ECommerceDbContext>();
-    var loggerFactory = services.GetRequiredService<ILoggerFactory>();  
-
-
-    try
-    {
-        var userManager = services.GetRequiredService<UserManager<AppUser>>();
-        var identityContext = services.GetRequiredService<AppIdentityDbContext>();
-        await identityContext.Database.MigrateAsync();
-        await AppIdentityDbContext.SeeduserAsyn(userManager);
-        await context.Database.MigrateAsync();
-        await ECommerceContextSeed.SeedAsync(context);
-
-    }
-    catch (Exception ex)
-    {
-        var logger = loggerFactory.CreateLogger<Program>();
-        logger.LogError(ex, "An error occurred during migration or seeding");
-    }
-}
-
 
 #endregion
 
-// Configure the HTTP request pipeline.
+#region CORS
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.AllowAnyHeader()
+              .AllowAnyMethod()
+              .WithOrigins("http://localhost:4200");
+    });
+});
+
+#endregion
+
+#region Swagger
+
+builder.Services.AddSwaggerGen(c =>
+{
+    var securitySchema = new OpenApiSecurityScheme
+    {
+        Description =
+            "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+
+        Name = "Authorization",
+
+        In = ParameterLocation.Header,
+
+        Type = SecuritySchemeType.Http,
+
+        Scheme = "bearer",
+
+        BearerFormat = "JWT",
+
+        Reference = new OpenApiReference
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = "Bearer"
+        }
+    };
+
+    c.AddSecurityDefinition("Bearer", securitySchema);
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            securitySchema,
+            Array.Empty<string>()
+        }
+    });
+});
+
+#endregion
+
+#endregion
+
+var app = builder.Build();
+
+#region Middlewares
+
+app.UseMiddleware<ExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -145,8 +156,54 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("CorsPolicy");
+
 app.UseAuthentication();
+
 app.UseAuthorization();
+
+#endregion
+
+#region Migrate & Seed Database
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var context =
+        services.GetRequiredService<ECommerceDbContext>();
+
+    var identityContext =
+        services.GetRequiredService<AppIdentityDbContext>();
+
+    var userManager =
+        services.GetRequiredService<UserManager<AppUser>>();
+
+    var loggerFactory =
+        services.GetRequiredService<ILoggerFactory>();
+
+    try
+    {
+        await identityContext.Database.MigrateAsync();
+
+        await AppIdentityDbContext.SeeduserAsyn(userManager);
+
+        await context.Database.MigrateAsync();
+
+        await ECommerceContextSeed.SeedAsync(context);
+    }
+    catch (Exception ex)
+    {
+        var logger = loggerFactory.CreateLogger<Program>();
+
+        logger.LogError(
+            ex,
+            "An error occurred during migration or seeding");
+    }
+}
+
+#endregion
 
 app.MapControllers();
 
