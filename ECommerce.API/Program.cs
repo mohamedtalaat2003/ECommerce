@@ -50,7 +50,11 @@ builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection(
 //validation token when came with reqeust
 //AddAuth=> بفعل الAuth بستخدام ال Jwt
 //JwtBearerDefaults => Bearer Toekn
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => //شروط التحقق
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = "localJwt";
+    options.DefaultChallengeScheme = "localJwt";
+}).AddJwtBearer("localJwt", options => //شروط التحقق
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -61,18 +65,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateAudience = false,//التوكن معمول لمين 
         ValidateLifetime = true
     };
+
+    
 }
-);
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer("Auth0", options =>
+).AddJwtBearer("Auth0", options =>
+{
+    options.Authority = $"https://{builder.Configuration["Auth0:Domain"]}/";
+    options.Audience = builder.Configuration["Auth0:Audience"];
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.Authority = $"https://{builder.Configuration["Auth0:Domain"]}/";
-        options.Audience = builder.Configuration["Auth0:Audience"];
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            NameClaimType = ClaimTypes.NameIdentifier
-        };
+        NameClaimType = ClaimTypes.NameIdentifier
+    };
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+
     });
+
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("CorsPolicy", policy =>
