@@ -32,7 +32,7 @@ namespace ECommerce.Domain.Entities
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         public OrderAddress ShipToAddress { get; set; }
         public DeliveryMethod DeliveryMethod { get; set; }
-        public IReadOnlyList<OrderItem> OrderItems { get; set; }
+        public List<OrderItem> OrderItems { get; set; }
         [NotMapped]
         //public decimal Subtotal => OrderItems?.Sum(item => item.Price * item.Quantity) ?? 0; 
         public decimal Subtotal { get; set; }

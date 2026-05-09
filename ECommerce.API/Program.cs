@@ -64,7 +64,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 }
 );
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+    .AddJwtBearer("Auth0", options =>
     {
         options.Authority = $"https://{builder.Configuration["Auth0:Domain"]}/";
         options.Audience = builder.Configuration["Auth0:Audience"];

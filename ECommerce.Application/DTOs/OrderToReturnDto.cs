@@ -24,6 +24,6 @@ namespace ECommerce.Application.DTOs
         public decimal Subtotal { get; set; }
         public decimal Total { get; set; } //GetTotal الي عملناها
         public string Status { get; set; }
-        public List<OrderItemDto> OrderItems { get; set; }
+        public List<OrderItemDto> OrderItems { get; set; } = new List<OrderItemDto>();
     }
 }
