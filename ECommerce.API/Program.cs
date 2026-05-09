@@ -64,11 +64,7 @@ builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection(
 //validation token when came with reqeust
 //AddAuth=> بفعل الAuth بستخدام ال Jwt
 //JwtBearerDefaults => Bearer Toekn
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = "localJwt";
-    options.DefaultChallengeScheme = "localJwt";
-})
+builder.Services.AddAuthentication()
 .AddJwtBearer("localJwt", options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters

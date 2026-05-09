@@ -120,9 +120,9 @@ namespace ECommerce.API.Controllers
             var user = await _userManager.FindByEmailAsync(email);
 
             if(user == null)
-               return NotFound(new ApiResponse(404));
+               return Ok(false);
 
-            return Ok();
+            return Ok(true);
         }
 
         [Authorize]
@@ -142,14 +142,13 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<AddressDto>> UpdateUserAddress(AddressDto addressDto)
+        public async Task<ActionResult<AddressDto>> UpdateUserAddress([FromBody]AddressDto addressDto)
         {
-            if (addressDto == null) 
-                return NotFound(new ApiResponse(404));
 
             var userWithAddress = _userManager.Users.Include(u => u.Address);
             var email = User.FindFirstValue(ClaimTypes.Email);
             var user = await userWithAddress.SingleOrDefaultAsync(x => x.Email == email);
+
 
             if (user == null) 
                 return Unauthorized(new ApiResponse(401, "User no longer exists"));

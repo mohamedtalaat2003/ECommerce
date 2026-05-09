@@ -11,8 +11,6 @@ namespace ECommerce.Application.DTOs
     public class OrderToReturnDto
     {
         public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LasttName { get; set; }
         public string BuyerEmail { get; set; }
         public DateTime OrderDate { get; set; }
         public OrderAddress ShipToAddress {  get; set; }
