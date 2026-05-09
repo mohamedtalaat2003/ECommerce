@@ -68,31 +68,34 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = "localJwt";
     options.DefaultChallengeScheme = "localJwt";
-}).AddJwtBearer("localJwt", options => //شروط التحقق
+})
+.AddJwtBearer("localJwt", options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuerSigningKey = true, // علشان هي ترو فهتأكد من ال signature // خليها ديما ترو 
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:Key"])),
-        ValidIssuer = builder.Configuration["Token:Issuer"],//مكان التوكن اللي طالع منه
-        ValidateIssuer = true,//فعل التحقق من مكان صور التوكن هل هوا نفس الشخص ولا لا اللي طلعله التوكن من المكان دا 
-        ValidateAudience = false,//التوكن معمول لمين 
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Token:Key"])
+        ),
+
+        ValidIssuer = builder.Configuration["Token:Issuer"],
+        ValidateIssuer = true,
+
+        ValidateAudience = false,
+
         ValidateLifetime = true
     };
-
-    
-}
-).AddJwtBearer("Auth0", options =>
+})
+.AddJwtBearer("Auth0", options =>
 {
     options.Authority = $"https://{builder.Configuration["Auth0:Domain"]}/";
     options.Audience = builder.Configuration["Auth0:Audience"];
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
         NameClaimType = ClaimTypes.NameIdentifier
     };
-    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
-
-    });
+});
 
 builder.Services.AddCors(opt =>
 {
@@ -111,29 +114,29 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors("CorsPolicy");
 
 #region Migrate and Seed Database to test connection with neon
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-//    var context = services.GetRequiredService<ECommerceDbContext>();
-//    var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ECommerceDbContext>();
+    var loggerFactory = services.GetRequiredService<ILoggerFactory>();  
 
 
-//    try
-//    {
-//        var userManager = services.GetRequiredService<UserManager<AppUser>>();
-//        var identityContext = services.GetRequiredService<AppIdentityDbContext>();
-//        await identityContext.Database.MigrateAsync();
-//        await AppIdentityDbContext.SeeduserAsyn(userManager);
-//        await context.Database.MigrateAsync();
-//        await ECommerceContextSeed.SeedAsync(context);
+    try
+    {
+        var userManager = services.GetRequiredService<UserManager<AppUser>>();
+        var identityContext = services.GetRequiredService<AppIdentityDbContext>();
+        await identityContext.Database.MigrateAsync();
+        await AppIdentityDbContext.SeeduserAsyn(userManager);
+        await context.Database.MigrateAsync();
+        await ECommerceContextSeed.SeedAsync(context);
 
-//    }
-//    catch (Exception ex)
-//    {
-//        var logger = loggerFactory.CreateLogger<Program>();
-//        logger.LogError(ex, "An error occurred during migration or seeding");
-//    }
-//}
+    }
+    catch (Exception ex)
+    {
+        var logger = loggerFactory.CreateLogger<Program>();
+        logger.LogError(ex, "An error occurred during migration or seeding");
+    }
+}
 
 
 #endregion

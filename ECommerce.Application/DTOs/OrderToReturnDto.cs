@@ -15,10 +15,7 @@ namespace ECommerce.Application.DTOs
         public string LasttName { get; set; }
         public string BuyerEmail { get; set; }
         public DateTime OrderDate { get; set; }
-        public string ShipToAddressStreet { get; set; }//autoMapper هيجمعهم
-        public  string  Street { get; set; }
-        public  string  City { get; set; }
-        public  string  ZipCode { get; set; }
+        public OrderAddress ShipToAddress {  get; set; }
         public string DeliveryMethod { get; set; } // اسم شركة الشحن
         public decimal ShippingPrice { get; set; }
         public decimal Subtotal { get; set; }

@@ -147,17 +147,17 @@ namespace ECommerce.API.Controllers
             if (addressDto == null) 
                 return NotFound(new ApiResponse(404));
 
-            var user = await _userManager.Users
-                .Include(x => x.Address)
-                .SingleOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
+            var userWithAddress = _userManager.Users.Include(u => u.Address);
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await userWithAddress.SingleOrDefaultAsync(x => x.Email == email);
 
             if (user == null) 
                 return Unauthorized(new ApiResponse(401, "User no longer exists"));
 
             if (user.Address == null) 
-                return NotFound(new ApiResponse(404));
-
-            user.Address = _mapper.Map<AddressDto, Address>(addressDto);
+                user.Address = _mapper.Map<AddressDto, Address>(addressDto);
+            else
+                _mapper.Map(addressDto, user.Address);
 
             var result = await _userManager.UpdateAsync(user);
 

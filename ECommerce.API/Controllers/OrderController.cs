@@ -29,13 +29,14 @@ namespace ECommerce.API.Controllers
         [HttpPost]
         public async Task<ActionResult<OrderToReturnDto>> CreateOrder(OrderDto orderDto )
         {
+            if (orderDto == null) 
+               return NotFound(new ApiResponse(404));
+
             var userEmail = User.RetrieveEmailFromPrincipal();
             var auth0Id = User.RetrieveNameFromPrincipal();
 
             var order = await _orderService.CreateOrderAsync(userEmail, auth0Id, orderDto.DeliveryMethodId,orderDto.BasketId,orderDto.ShipToAddress);
 
-            if (orderDto == null) 
-               return NotFound(new ApiResponse(404));
 
                 var email = User.FindFirstValue(ClaimTypes.Email);
             if(email == null) 

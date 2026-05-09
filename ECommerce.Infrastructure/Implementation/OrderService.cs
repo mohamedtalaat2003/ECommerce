@@ -34,9 +34,11 @@ namespace ECommerce.Infrastructure.Implementation
             var spec = new ProductsByIdsSpecification(ProductIds);
 
             var products = await _unitOfWork.Repository<Product>().ListSpecificationAsync(spec);
+
             foreach (var item in basket.Items)
             { 
                 var productItem = products.FirstOrDefault(p => p.Id == item.Id);
+                if (productItem == null) return null;
                 var itemOrder = new ProductItemOrdered(productItem.Id, productItem.Name, productItem.PictureUrl);
                 var OrderItem = new OrderItem(itemOrder, productItem.Price, item.Quantity);
                 items.Add(OrderItem);
