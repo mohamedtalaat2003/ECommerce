@@ -90,29 +90,29 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors("CorsPolicy");
 
 #region Migrate and Seed Database to test connection with neon
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<ECommerceDbContext>();
-    var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    var context = services.GetRequiredService<ECommerceDbContext>();
+//    var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
 
-    try
-    {
-        var userManager = services.GetRequiredService<UserManager<AppUser>>();
-        var identityContext = services.GetRequiredService<AppIdentityDbContext>();
-        await identityContext.Database.MigrateAsync();
-        await AppIdentityDbContext.SeeduserAsyn(userManager);
-        await context.Database.MigrateAsync();
-        await ECommerceContextSeed.SeedAsync(context);
+//    try
+//    {
+//        var userManager = services.GetRequiredService<UserManager<AppUser>>();
+//        var identityContext = services.GetRequiredService<AppIdentityDbContext>();
+//        await identityContext.Database.MigrateAsync();
+//        await AppIdentityDbContext.SeeduserAsyn(userManager);
+//        await context.Database.MigrateAsync();
+//        await ECommerceContextSeed.SeedAsync(context);
 
-    }
-    catch (Exception ex)
-    {
-        var logger = loggerFactory.CreateLogger<Program>();
-        logger.LogError(ex, "An error occurred during migration or seeding");
-    }
-}
+//    }
+//    catch (Exception ex)
+//    {
+//        var logger = loggerFactory.CreateLogger<Program>();
+//        logger.LogError(ex, "An error occurred during migration or seeding");
+//    }
+//}
 
 
 #endregion

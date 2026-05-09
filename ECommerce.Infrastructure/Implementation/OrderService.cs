@@ -25,7 +25,7 @@ namespace ECommerce.Infrastructure.Implementation
 
         public async Task<Order> CreateOrderAsync(string buyerEmail, string auth0Id ,int deliverymethodId, int basketId, AddressDto shippingAddress)
         {
-            var basket = await _basketRepository.GetBasketAsync(basketId);//هاتب الباسكت من الريدس
+            var basket = await _basketRepository.GetBasketAsync(basketId.ToString());//هاتب الباسكت من الريدس
             if (basket == null) return null;
             var items = new List<OrderItem>();
 
@@ -52,7 +52,7 @@ namespace ECommerce.Infrastructure.Implementation
 
             if (result <= 0) return null;
 
-            await _basketRepository.DeleteBasketAsync(basketId);
+            await _basketRepository.DeleteBasketAsync(basketId.ToString());
             return order;
         }
 

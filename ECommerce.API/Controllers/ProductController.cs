@@ -141,7 +141,7 @@ namespace ECommerce.API.Controllers
                 await _photoService.DeletePhotoAsync(productDeleted.PublicId);
             }
 
-            _unitOfWork.Repository<Product>().Delete(id);
+            await _unitOfWork.Repository<Product>().Delete(id);
 
            var result =  await _unitOfWork.CompleteAsync();
             if (result <= 0)

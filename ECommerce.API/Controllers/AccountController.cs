@@ -122,7 +122,7 @@ namespace ECommerce.API.Controllers
             if(user == null)
                return NotFound(new ApiResponse(404));
 
-            return Ok(true);
+            return Ok();
         }
 
         [Authorize]

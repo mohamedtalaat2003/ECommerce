@@ -44,6 +44,7 @@ namespace ECommerce.Domain.Specifications
         {
             AddInclude(x => x.ProductBrand);
             AddInclude(p => p.ProductCategory);
+
         }
 
     }

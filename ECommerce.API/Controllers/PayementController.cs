@@ -33,7 +33,7 @@ namespace ECommerce.API.Controllers
             if(webhookDto.OrderStatus == "paid")
             {
                 order.Status = OrderStatus.PaymentReceived;
-                await _basketRepository.DeleteBasketAsync(order.BuyerAuth0Id);
+                await _basketRepository.DeleteBasketAsync(order.BuyerAuth0Id.ToString());
             }
             else if(webhookDto.OrderStatus == "failed")
             {

@@ -53,10 +53,10 @@ Redis يحذف key*/
         public async Task<CustomerBasket> UpdateBasketAsync(CustomerBasket basket)
         {
             //                            store in redis                          convert object t json           redis store temporary data for 30 days
-            var created = await _database.StringSetAsync(basket.Id, JsonSerializer.Serialize(basket), TimeSpan.FromDays(30));
+            var created = await _database.StringSetAsync(basket.Id.ToString(), JsonSerializer.Serialize(basket), TimeSpan.FromDays(30));
 
             if (!created) return null; // if the basket is not created return null
-            return await GetBasketAsync(basket.Id);
+            return await GetBasketAsync(basket.Id.ToString());
         }
     }
 }
