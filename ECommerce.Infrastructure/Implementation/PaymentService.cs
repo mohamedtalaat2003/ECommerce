@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -76,6 +77,19 @@ namespace ECommerce.Infrastructure.Implementation
             return "Failed";
         }
 
+        public bool VerifyHmacSignature(string payload, string receivedSignature)
+        {
+            var secret = _config["Fawaterk:WebhookSecret"];
+            var keyBytes = Encoding.UTF8.GetBytes(secret);
+            var payloadBytes = Encoding.UTF8.GetBytes(payload);
+
+            using(var hmac =new HMACSHA256(keyBytes))
+            {
+                var hashBytes = hmac.ComputeHash(payloadBytes);
+                var CalculatinfSignature = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+                return CalculatinfSignature == receivedSignature.ToLower();
+            }
+        }
 
     }
 }

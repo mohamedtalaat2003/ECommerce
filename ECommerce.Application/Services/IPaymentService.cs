@@ -11,5 +11,6 @@ namespace ECommerce.Application.Services
     {
         Task<string> CreateOrUpdatePaymentIntent(Order order);
         Task<string> CheckPaymentStatusAsync(string invoiceId);
+        bool VerifyHmacSignature(string payload, string receivedSignature);
     }
 }
