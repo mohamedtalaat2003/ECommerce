@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ECommerce.Application.DTOs;
 using ECommerce.Application.Global_Error_Handling;
 using ECommerce.Application.Repositories.Contract.Common;
@@ -78,7 +78,18 @@ namespace ECommerce.API.Controllers
 
             await _unitOfWork.Repository<Product>().AddAsync(product);
 
-           var result = await _unitOfWork.CompleteAsync();
+            int result;
+            try 
+            {
+                result = await _unitOfWork.CompleteAsync();
+            }
+            catch(Exception ex)
+            {
+                await _photoService.DeletePhotoAsync(photoResult.PublicId);
+                var innerMsg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return BadRequest(new ApiResponse(400, "DB Error: " + innerMsg));
+            }
+
             if(result <=0)
             {
                 await _photoService.DeletePhotoAsync(photoResult.PublicId);
