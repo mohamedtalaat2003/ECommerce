@@ -99,8 +99,7 @@ builder.Services.AddCors(options =>
               .WithOrigins(
                   "http://localhost:4200",
                   "http://localhost:3000",
-                  "https://aura-e-commerce.vercel.app",
-                  "https://aura-e-commerce-adel-mahmoud10s-projects.vercel.app"
+                  "https://auraecommerce.vercel.app"
               )
               .SetIsOriginAllowedToAllowWildcardSubdomains();
     });
