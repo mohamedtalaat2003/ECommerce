@@ -1,4 +1,4 @@
-﻿using CloudinaryDotNet;
+using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using ECommerce.Application.Helpers;
 using ECommerce.Application.Services;
@@ -39,7 +39,7 @@ namespace ECommerce.Infrastructure.Implementation
             {
                 if (file.Length > 2 * 1024 * 1024) throw new Exception("File exceeds 2MB limit");
                 var allowExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-                var extensionPath = Path.GetExtension(file.Name).ToLower();
+                var extensionPath = Path.GetExtension(file.FileName).ToLower();
                 if(!allowExtensions.Contains(extensionPath))
                     throw new Exception("Invalid file type. Only JPG, PNG, and GIF are allowed.");
 
