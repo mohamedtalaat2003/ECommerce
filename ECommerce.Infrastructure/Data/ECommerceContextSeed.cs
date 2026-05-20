@@ -1,4 +1,4 @@
-﻿using ECommerce.Domain.Entities;
+using ECommerce.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,6 +9,30 @@ namespace ECommerce.Infrastructure.Data
     {
         public static async Task SeedAsync(ECommerceDbContext context)
         {
+            if (!context.ProductBrands.Any())
+            {
+                var brands = new List<ProductBrand>
+                {
+                    new ProductBrand { Name = "Brand 1" },
+                    new ProductBrand { Name = "Brand 2" },
+                    new ProductBrand { Name = "Brand 3" }
+                };
+                await context.ProductBrands.AddRangeAsync(brands);
+                await context.SaveChangesAsync();
+            }
+
+            if (!context.ProductCategories.Any())
+            {
+                var categories = new List<ProductCategory>
+                {
+                    new ProductCategory { Name = "Category 1" },
+                    new ProductCategory { Name = "Category 2" },
+                    new ProductCategory { Name = "Category 3" }
+                };
+                await context.ProductCategories.AddRangeAsync(categories);
+                await context.SaveChangesAsync();
+            }
+
             if (!context.products.Any())
             {
                 var product = new List<Product>
