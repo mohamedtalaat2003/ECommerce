@@ -99,7 +99,7 @@ namespace ECommerce.API.Controllers
             return CreatedAtAction(nameof(Get),new {id = product.Id} , productDto);
         }
 
-        [HttpPut("{id}/photo")]
+        [HttpPut("{id}")]
         public async Task<ActionResult> Update(int id , [FromForm] ProductToReturnDto productDto , IFormFile file)
         {
             if (id != productDto.Id || id <= 0) 
@@ -112,24 +112,32 @@ namespace ECommerce.API.Controllers
 
             _mapper.Map(productDto, productInDb);
 
-            if(!string.IsNullOrEmpty(productInDb.PublicId))
+            string uploadedPublicId = null;
+
+            if (file != null)
             {
-                var deletionResult = await _photoService.DeletePhotoAsync(productInDb.PublicId);
-                if(deletionResult.Error != null) return BadRequest(deletionResult.Error.Message);
+                if(!string.IsNullOrEmpty(productInDb.PublicId))
+                {
+                    var deletionResult = await _photoService.DeletePhotoAsync(productInDb.PublicId);
+                    if(deletionResult.Error != null) return BadRequest(deletionResult.Error.Message);
+                }
+
+                var uploadResult = await _photoService.AddPhotoAsync(file);
+                if(uploadResult.Error != null) return BadRequest(uploadResult.Error.Message);
+
+                productInDb.PictureUrl = uploadResult.SecureUrl.AbsoluteUri;
+                productInDb.PublicId = uploadResult.PublicId;
+                uploadedPublicId = uploadResult.PublicId;
             }
-
-            var uploadResult = await _photoService.AddPhotoAsync(file);
-            if(uploadResult.Error != null) return BadRequest(uploadResult.Error.Message);
-
-            productInDb.PictureUrl = uploadResult.SecureUrl.AbsoluteUri;
-            productInDb.PublicId = uploadResult.PublicId;
-
 
             _unitOfWork.Repository<Product>().Update(productInDb);
             var result = await _unitOfWork.CompleteAsync();
             if (result <= 0)
             {
-                await _photoService.DeletePhotoAsync(uploadResult.PublicId);
+                if (uploadedPublicId != null)
+                {
+                    await _photoService.DeletePhotoAsync(uploadedPublicId);
+                }
                 return BadRequest(new ApiResponse(400, "Failed to update product"));
             }
 
