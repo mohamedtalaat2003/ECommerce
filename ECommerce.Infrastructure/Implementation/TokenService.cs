@@ -1,6 +1,7 @@
 ﻿using ECommerce.Application.Services;
 using ECommerce.Domain.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -19,38 +20,56 @@ namespace ECommerce.Infrastructure.Implementation
     {
         private readonly IConfiguration _config; // علشان اقدر اوصل ل ال appsetting
         private readonly SymmetricSecurityKey _key;// تقدر تقول عليه الختم اللي هيميز التوكن بتاع اليوزر عن غيره 
-        public TokenService(IConfiguration config)
+        private readonly UserManager<AppUser> _userManager;
+        public TokenService(IConfiguration config, UserManager<AppUser> userManager)
         {
             _config = config;
+            _userManager = userManager;
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Token:Key"]));//حول ال keysecret to bytes 
             //لأن التشفير بيشتغل بال bytes
             //SymmetricSecurityKey => convert bytes to a security key that can be used for signing the token , conver bytes to object to secure token
         }
 
-        public string CreateToken(AppUser user)
+        public async Task<string> CreateToken(AppUser user)
         {
+            var key = _config["JWT:Key"] ??
+                throw new InvalidOperationException("JWT key is not configured.");
+
+            var issuer = _config["JWT:issuer"] ??
+                throw new InvalidOperationException("JWT issuer is not configured.");
+
+            var audience = _config["JWT:audience"] ??
+                throw new InvalidOperationException("JWT audience is not configured.");
+
             //payload
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Email,user.Email),
-                new Claim(ClaimTypes.GivenName,user.DisplayName),
+                new(JwtRegisteredClaimNames.Sub, user.Id),
+                new(JwtRegisteredClaimNames.Email, user.Email??string.Empty),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), // unique identifier for the token)
             };
+
+            var role = await _userManager.GetRolesAsync(user);
+            claims.AddRange(role.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature); //kesecret + algorithm used to secure token
 
             //setting the token descriptor
             //وصفة بناء ال jwt
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims), //put claims in the token
-                Expires = DateTime.UtcNow.AddDays(7),//expiration time for the token
-                SigningCredentials = creds, // key secret + hash
-                Issuer = _config["Token:Issuer"], // من اصدر ال توكن
-            };
+            var tokenDescriptor = 
+               new JwtSecurityToken(
+                issuer: issuer,
+                audience: audience,
+                notBefore: DateTime.UtcNow,
+                claims: claims,
+                expires: DateTime.UtcNow.AddDays(7),
+                signingCredentials: creds
+                );
+          
 
-            var tokenHandler = new JwtSecurityTokenHandler();// manage token read and analys and validation
-            var token = tokenHandler.CreateToken(tokenDescriptor);// real token
-            return tokenHandler.WriteToken(token);// convert token to string
+            return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor); //convert the token to string
         }
+
+      
     }
 }
